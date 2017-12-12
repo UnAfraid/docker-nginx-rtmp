@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Stream</title>
+        <link href="/css/video-js.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <video id="player" width=960 height=540 class="video-js vjs-default-skin vjs-16-9 vjs-big-play-centered" controls></video>
+        <script src="/js/video.min.js"></script>
+        <script src="/js/videojs-contrib-hls.min.js"></script>
+        <script>
+            var player = videojs('player');
+            player.ready(function() {
+              player.src({
+                src: window.location.pathname.replace('/hls_player/', '/hls/') + '.m3u8',
+                type: 'application/x-mpegURL'
+              });
+
+              player.play();
+            });
+        </script>
+    </body>
+</html>
