@@ -8,6 +8,7 @@ ENV NGINX_FANCYINDEX_MODULE_VERSION 0.4.2
 ENV PCRE_VERSION 8.40
 ENV ZLIB_VERSION 1.2.11
 ENV OPENSSL_VERSION 1.1.0g
+ENV GO_HEALTH_CHECK_VERSION 1.1
 
 # Install dependencies
 RUN apt-get update && \
@@ -54,6 +55,12 @@ RUN mkdir -p /tmp/build/openssl/ && \
     wget -O openssl-${OPENSSL_VERSION}.tar.gz https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
     tar -xzf openssl-${OPENSSL_VERSION}.tar.gz && \
     cd openssl-${OPENSSL_VERSION}
+
+# Download and decompress go-health-check
+RUN mkdir -p /tmp/build/go-health-check/ && \
+    cd /tmp/build/go-health-check &&\
+    wget -O go-health-check_${GO_HEALTH_CHECK_VERSION}_linux_amd64.tar.gz https://github.com/UnAfraid/go-health-check/releases/download/v${GO_HEALTH_CHECK_VERSION}/go-health-check_${GO_HEALTH_CHECK_VERSION}_linux_amd64.tar.gz && \
+    tar -xzf go-health-check_${GO_HEALTH_CHECK_VERSION}_linux_amd64.tar.gz
 
 # Build and install Nginx
 # The default puts everything under /usr/local/nginx, so it's needed to change
@@ -105,6 +112,7 @@ RUN cd /tmp/build/nginx/${NGINX_VERSION} && \
     make -j $(getconf _NPROCESSORS_ONLN) && \
     make install && \
     mkdir /var/lock/nginx ls && \
+	mv /tmp/build/go-health-check/go-health-check /usr/local/bin/go-health-check && \
     rm -rf /tmp/build
 
 # Forward logs to Docker
@@ -112,8 +120,8 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
 # Set up config file
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY default.conf /etc/nginx/sites-enabled/default.conf
+COPY nginx/conf/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/conf/default.conf /etc/nginx/sites-enabled/default.conf
 
 # Create directories
 RUN mkdir -p /var/www/rtmp && \
@@ -121,16 +129,14 @@ RUN mkdir -p /var/www/rtmp && \
     mkdir -p /var/www/rtmp/streaming
 
 # Copy assets
-COPY web/stat.xsl /var/www/rtmp/stat.xsl
-COPY web/index.html /var/www/rtmp/index.html
-COPY web/dash.html /var/www/rtmp/dash.html
-COPY web/hls.html /var/www/rtmp/hls.html
-COPY web/js /var/www/rtmp/js
-COPY web/css /var/www/rtmp/css
-COPY entry-point.sh /usr/local/bin/entry-point.sh
-COPY go-health-check /usr/local/bin/go-health-check
-RUN chmod +x /usr/local/bin/entry-point.sh && \
-    chown -R www-data: /var/www/
+COPY nginx/web/stat.xsl /var/www/rtmp/stat.xsl
+COPY nginx/web/index.html /var/www/rtmp/index.html
+COPY nginx/web/dash.html /var/www/rtmp/dash.html
+COPY nginx/web/hls.html /var/www/rtmp/hls.html
+COPY nginx/web/js /var/www/rtmp/js
+COPY nginx/web/css /var/www/rtmp/css
+COPY nginx/bin/entry-point.sh /usr/local/bin/entry-point.sh
+RUN chown -R www-data: /var/www/
 
 # Setup default working directory
 WORKDIR /etc/nginx
