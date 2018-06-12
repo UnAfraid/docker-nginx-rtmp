@@ -2,7 +2,7 @@ FROM buildpack-deps:stretch
 
 # Versions of Nginx and nginx-rtmp-module to use
 ENV DEBIAN_FRONTEND=noninteractive
-ENV NGINX_VERSION nginx-1.12.2
+ENV NGINX_VERSION nginx-1.14.0
 ENV NGINX_RTMP_MODULE_VERSION 1.2.1
 ENV NGINX_FANCYINDEX_MODULE_VERSION 0.4.2
 ENV PCRE_VERSION 8.40
