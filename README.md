@@ -1,10 +1,10 @@
 # docker-nginx-rtmp
 
 # Versions
-- nginx: 1.14.0
-- nginx-rtmp-module: 1.2.1
-- nginx-fancyindex-module: 0.4.2
-- pcre: 8.40
+- nginx: 1.17.0
+- nginx-rtmp-module: 1.2.2
+- nginx-fancyindex-module: 0.4.3
+- pcre: 8.42
 - zlib: 1.2.11
 - openssl: 1.1.0g
 - go-health-check: 1.1
@@ -12,7 +12,7 @@
 ## Method one only docker
 In order to run this container you need docker installed https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
 
-Run the following command: `docker run --name nginx-rtmp -d -p 8080:80 -p 1935:1935 unafraid/nginx-rtmp:1.14.0-1.2.1-no-record`
+Run the following command: `docker run --name nginx-rtmp -d -p 8080:80 -p 1935:1935 unafraid/nginx-rtmp:1.17.0-1.2.2-no-record`
 
 ## Method two docker + docker-compose
 Or use docker-compose instead https://docs.docker.com/compose/install/#install-compose
@@ -23,7 +23,7 @@ version: "2.1"
 
 services:
  server:
-    image: unafraid/nginx-rtmp:1.14.0-1.2.1-no-record
+    image: unafraid/nginx-rtmp:1.17.0-1.2.2-no-record
     container_name: nginx_rtmp
     ports:
       - 8080:80
